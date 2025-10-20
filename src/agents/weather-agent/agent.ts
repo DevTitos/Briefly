@@ -11,7 +11,7 @@ import { weatherTool } from "./tools";
  *
  * @returns A configured LlmAgent instance specialized for weather information
  */
-export const getWeatherAgent = () => {
+export const getWeatherAgent = async () => {
 	const weatherAgent = new LlmAgent({
 		name: "weather_agent",
 		description: "provides weather for a given city",

@@ -12,6 +12,7 @@ import { indexHandler } from "./routes/index";
 import { digestRouter } from "./routes/digest";
 import { locationRouter } from './routes/location';
 import { calendarRouter } from './routes/calendar';
+import { debugAgentHandler } from "./routes/debug-agent";
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.post("/ask", askHandler);
 app.route('/digest', digestRouter);
 app.route('/location', locationRouter);
 app.route('/calendar', calendarRouter);
+app.get("/debug-agent", debugAgentHandler);
 
 const port = Number(env.PORT) || 3000;
 

@@ -1,35 +1,5 @@
-// src/agents/agent.ts
-import { AgentBuilder } from "@iqai/adk";
-import { env } from "../env";
-import { getJokeAgent } from "./joke-agent/agent";
-import { getWeatherAgent } from "./weather-agent/agent";
-
-/**
- * Creates and configures the root agent for the Hono server.
- */
-export const getRootAgent = async () => {  // Make it async
-    const jokeAgent = await getJokeAgent();  // Await if these are async
-    const weatherAgent = await getWeatherAgent();  // Await if these are async
-
-    const agent = AgentBuilder.create("root_agent")
-        .withDescription(
-            "Root agent that delegates tasks to sub-agents for telling jokes and providing weather information.",
-        )
-        .withInstruction(
-            "Use the joke sub-agent for humor requests and the weather sub-agent for weather-related queries. Route user requests to the appropriate sub-agent.",
-        )
-        .withModel(env.LLM_MODEL)
-        .withSubAgents([jokeAgent, weatherAgent])
-        .build();
-
-    console.log("🔍 Built agent:", agent);
-    console.log("🔍 Agent type:", typeof agent);
-    
-    return agent;
-};
-
-// Simple synchronous version that definitely works
-export const getSimpleAgent = () => {
+// src/agents/working-agent.ts
+export const getWorkingAgent = () => {
     return {
         run: async (input: string): Promise<string> => {
             console.log(`🤖 Processing: ${input}`);

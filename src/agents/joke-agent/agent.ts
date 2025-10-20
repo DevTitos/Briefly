@@ -11,7 +11,7 @@ import { jokeTool } from "./tools";
  *
  * @returns A configured LlmAgent instance specialized for joke delivery
  */
-export const getJokeAgent = () => {
+export const getJokeAgent = async () => {
 	const jokeAgent = new LlmAgent({
 		name: "joke_agent",
 		description: "provides a random joke",
