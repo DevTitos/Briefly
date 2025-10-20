@@ -9,6 +9,9 @@ import { prettyJSON } from "hono/pretty-json";
 import { askHandler } from "./routes/ask";
 import { healthHandler } from "./routes/health";
 import { indexHandler } from "./routes/index";
+import { digestRouter } from "./routes/digest";
+import { locationRouter } from './routes/location';
+import { calendarRouter } from './routes/calendar';
 
 dotenv.config();
 
@@ -29,6 +32,9 @@ app.use("*", prettyJSON());
 app.get("/", indexHandler);
 app.get("/health", healthHandler);
 app.post("/ask", askHandler);
+app.route('/digest', digestRouter);
+app.route('/location', locationRouter);
+app.route('/calendar', calendarRouter);
 
 const port = Number(env.PORT) || 3000;
 
