@@ -9,10 +9,18 @@ import { prettyJSON } from "hono/pretty-json";
 import { askHandler } from "./routes/ask";
 import { healthHandler } from "./routes/health";
 import { indexHandler } from "./routes/index";
-import { digestRouter } from "./routes/digest";
 import { locationRouter } from './routes/location';
 import { calendarRouter } from './routes/calendar';
 import { debugAgentHandler } from "./routes/debug-agent";
+import { testFallbackHandler } from "./routes/test-fallback";
+import { 
+  digestHandler, 
+  basicDigestHandler, 
+  setGoalHandler, 
+  logProgressHandler, 
+  getSuccessInsightsHandler 
+} from "./routes/digest";
+
 
 dotenv.config();
 
@@ -33,10 +41,16 @@ app.use("*", prettyJSON());
 app.get("/", indexHandler);
 app.get("/health", healthHandler);
 app.post("/ask", askHandler);
-app.route('/digest', digestRouter);
 app.route('/location', locationRouter);
 app.route('/calendar', calendarRouter);
 app.get("/debug-agent", debugAgentHandler);
+// Register the routes
+app.get("/digest", digestHandler);
+app.get("/digest/basic", basicDigestHandler);
+app.post("/digest/set-goal", setGoalHandler);
+app.post("/digest/log-progress", logProgressHandler);
+app.get("/digest/success-insights", getSuccessInsightsHandler);
+app.get("/test-fallback", testFallbackHandler);
 
 const port = Number(env.PORT) || 3000;
 

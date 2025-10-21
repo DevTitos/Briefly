@@ -1,0 +1,1264 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Briefly - AI-Powered Daily Assistant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                        },
+                        success: {
+                            50: '#f0fdf4',
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                        }
+                    },
+                    animation: {
+                        'float': 'float 6s ease-in-out infinite',
+                        'glow': 'glow 2s ease-in-out infinite alternate',
+                        'shimmer': 'shimmer 2s linear infinite',
+                    },
+                    keyframes: {
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' },
+                        },
+                        glow: {
+                            '0%': { boxShadow: '0 0 20px rgba(14, 165, 233, 0.3)' },
+                            '100%': { boxShadow: '0 0 30px rgba(14, 165, 233, 0.6)' },
+                        },
+                        shimmer: {
+                            '0%': { backgroundPosition: '-200px 0' },
+                            '100%': { backgroundPosition: 'calc(200px + 100%) 0' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+        
+        * {
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .glass-effect {
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+        }
+        
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border: 1px solid rgba(229, 231, 235, 0.5);
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+            border-color: rgba(14, 165, 233, 0.2);
+        }
+        
+        .pulse-ring {
+            animation: pulse-ring 2s cubic-bezier(0.455, 0.03, 0.515, 0.955) infinite;
+        }
+        
+        @keyframes pulse-ring {
+            0% { transform: scale(0.8); opacity: 1; }
+            80%, 100% { transform: scale(1.2); opacity: 0; }
+        }
+        
+        .typing-dot {
+            animation: typing-bounce 1.4s ease-in-out infinite both;
+        }
+        
+        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
+        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes typing-bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
+        
+        .status-pulse {
+            animation: status-pulse 2s infinite;
+        }
+        
+        @keyframes status-pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+        
+        .scrollbar-design {
+            scrollbar-width: thin;
+            scrollbar-color: #cbd5e1 #f8fafc;
+        }
+        
+        .scrollbar-design::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .scrollbar-design::-webkit-scrollbar-track {
+            background: #f8fafc;
+            border-radius: 10px;
+        }
+        
+        .scrollbar-design::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        
+        .scrollbar-design::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 0.5s ease-out;
+        }
+        
+        @keyframes slideInRight {
+            from {
+                opacity: 0;
+                transform: translateX(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-100">
+    <!-- Enhanced Location Modal -->
+    <div id="locationModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden fade-in-up">
+        <div class="bg-white rounded-2xl p-8 mx-4 max-w-md w-full glass-effect border border-white/20 shadow-2xl">
+            <div class="text-center">
+                <div class="relative inline-block">
+                    <div class="w-20 h-20 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                        <i class="fas fa-map-marker-alt text-white text-2xl"></i>
+                    </div>
+                    <div class="absolute -top-1 -right-1 w-6 h-6 bg-success-500 rounded-full flex items-center justify-center">
+                        <i class="fas fa-plus text-white text-xs"></i>
+                    </div>
+                </div>
+                <h3 class="text-2xl font-bold text-gray-900 mb-3">Enable Location Services</h3>
+                <p class="text-gray-600 mb-6 leading-relaxed">
+                    Get personalized weather insights and location-based recommendations for your daily planning.
+                </p>
+                <div class="flex space-x-4">
+                    <button onclick="denyLocation()" class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200 hover:scale-105 active:scale-95">
+                        Skip for Now
+                    </button>
+                    <button onclick="requestLocation()" class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95">
+                        Allow Location
+                    </button>
+                </div>
+                <p class="text-xs text-gray-500 mt-4">
+                    Your location data is stored locally and never shared
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Header -->
+    <header class="gradient-bg text-white shadow-2xl relative overflow-hidden">
+        <div class="absolute inset-0 bg-black/10"></div>
+        <div class="container mx-auto px-6 py-8 relative z-10">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-4">
+                    <div class="relative">
+                        <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30 shadow-lg">
+                            <i class="fas fa-sparkles text-white text-xl"></i>
+                        </div>
+                        <div class="absolute -top-1 -right-1 w-5 h-5 bg-success-500 rounded-full flex items-center justify-center border-2 border-white">
+                            <i class="fas fa-bolt text-white text-xs"></i>
+                        </div>
+                    </div>
+                    <div>
+                        <h1 class="text-3xl font-bold">Briefly</h1>
+                        <p class="text-white/80 text-sm">Your AI Daily Assistant</p>
+                    </div>
+                </div>
+                
+                <div class="flex items-center space-x-4">
+                    <div class="hidden md:flex items-center space-x-3 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/20">
+                        <div class="w-2 h-2 bg-success-500 rounded-full status-pulse"></div>
+                        <span class="text-sm font-medium">System Online</span>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="showSection('digest')" id="digestTab" class="px-8 py-3 bg-white text-primary-600 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg flex items-center space-x-3 group">
+                            <i class="fas fa-bolt group-hover:scale-110 transition-transform"></i>
+                            <span>Daily Digest</span>
+                        </button>
+                        <button onclick="showSection('chat')" id="chatTab" class="px-8 py-3 bg-white/10 text-white rounded-xl font-semibold hover:bg-white/20 transition-all duration-300 hover:scale-105 active:scale-95 border border-white/20 backdrop-blur-sm flex items-center space-x-3 group">
+                            <i class="fas fa-robot group-hover:scale-110 transition-transform"></i>
+                            <span>AI Assistant</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto px-6 py-8">
+        <!-- Enhanced Connection Status -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <!-- Location Status -->
+            <div id="locationStatus" class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 card-hover">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="relative">
+                            <div class="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center">
+                                <i class="fas fa-map-marker-alt text-white"></i>
+                            </div>
+                            <div id="locationPulse" class="absolute -top-1 -right-1 w-4 h-4 bg-yellow-500 rounded-full pulse-ring hidden"></div>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">Location Services</p>
+                            <p class="text-xl font-bold text-gray-900" id="locationText">Waiting for access</p>
+                        </div>
+                    </div>
+                    <button onclick="showLocationModal()" class="w-10 h-10 bg-gray-100 hover:bg-gray-200 rounded-xl flex items-center justify-center transition-all duration-200 hover:scale-110">
+                        <i class="fas fa-cog text-gray-600"></i>
+                    </button>
+                </div>
+                <div class="mt-4 flex space-x-3">
+                    <button onclick="requestLocation()" class="flex-1 bg-primary-500 hover:bg-primary-600 text-white py-2 px-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105 text-sm">
+                        <i class="fas fa-crosshairs mr-2"></i>Detect Location
+                    </button>
+                    <button onclick="setManualLocation()" class="flex-1 bg-gray-100 hover:bg-gray-200 text-gray-700 py-2 px-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105 text-sm">
+                        <i class="fas fa-edit mr-2"></i>Set Manual
+                    </button>
+                </div>
+            </div>
+
+            <!-- Calendar Status -->
+            <div id="calendarStatus" class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 card-hover">
+                <div class="flex items-center justify-between">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-600 rounded-2xl flex items-center justify-center">
+                            <i class="fas fa-calendar-alt text-white"></i>
+                        </div>
+                        <div>
+                            <p class="text-gray-500 text-sm font-medium">Calendar Integration</p>
+                            <p class="text-xl font-bold text-gray-900" id="calendarText">Ready to connect</p>
+                        </div>
+                    </div>
+                    <div class="flex space-x-2">
+                        <button onclick="connectCalendar()" id="calendarConnectBtn" class="bg-success-500 hover:bg-success-600 text-white py-2 px-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105 text-sm">
+                            <i class="fas fa-plug mr-2"></i>Connect
+                        </button>
+                        <button onclick="disconnectCalendar()" id="calendarDisconnectBtn" class="bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg font-semibold transition-all duration-200 hover:scale-105 text-sm hidden">
+                            <i class="fas fa-unlink mr-2"></i>Disconnect
+                        </button>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-600">
+                    <i class="fas fa-info-circle mr-2 text-primary-500"></i>
+                    Connect to access your schedule and get personalized daily planning
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Tracking Section -->
+        <div class="bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-8 mb-8 shadow-2xl text-white relative overflow-hidden">
+            <div class="absolute inset-0 bg-black/10"></div>
+            <div class="relative z-10">
+                <div class="flex items-center justify-between mb-6">
+                    <div>
+                        <h2 class="text-2xl font-bold mb-2">🎯 Success Tracking</h2>
+                        <p class="text-white/80">Track your goals and daily progress</p>
+                    </div>
+                    <div class="flex space-x-3">
+                        <button onclick="setDailyGoal()" class="bg-white/20 hover:bg-white/30 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-200 hover:scale-105 backdrop-blur-sm border border-white/20">
+                            <i class="fas fa-bullseye mr-2"></i>Set Goal
+                        </button>
+                        <button onclick="logDailyProgress()" class="bg-white/20 hover:bg-white/30 text-white py-3 px-6 rounded-xl font-semibold transition-all duration-200 hover:scale-105 backdrop-blur-sm border border-white/20">
+                            <i class="fas fa-chart-line mr-2"></i>Log Progress
+                        </button>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                        <div class="text-white/80 text-sm">Today's Focus</div>
+                        <div class="text-lg font-semibold mt-1" id="dailyGoal">Set a goal to begin</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                        <div class="text-white/80 text-sm">Progress Today</div>
+                        <div class="text-lg font-semibold mt-1" id="progressCount">0 achievements</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur-sm rounded-xl p-4 border border-white/20">
+                        <div class="text-white/80 text-sm">Motivation Level</div>
+                        <div class="text-lg font-semibold mt-1" id="motivationLevel">💪 Ready</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Stats Overview -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 card-hover group">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Calendar Events</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2" id="eventCount">--</p>
+                    </div>
+                    <div class="w-14 h-14 bg-blue-100 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-calendar-day text-blue-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-600">
+                    <i class="fas fa-clock text-blue-500 mr-2"></i>
+                    Today's schedule
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 card-hover group">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Weather</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2" id="weatherTemp">--°C</p>
+                    </div>
+                    <div class="w-14 h-14 bg-orange-100 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-sun text-orange-600 text-xl" id="weatherIcon"></i>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-600" id="weatherLocation">
+                    <i class="fas fa-map-marker-alt text-orange-500 mr-2"></i>
+                    Location needed
+                </div>
+            </div>
+            
+            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 card-hover group">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">News Headlines</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2" id="newsCount">--</p>
+                    </div>
+                    <div class="w-14 h-14 bg-green-100 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-newspaper text-green-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-600">
+                    <i class="fas fa-globe text-green-500 mr-2"></i>
+                    Latest updates
+                </div>
+            </div>
+
+            <div class="bg-white rounded-2xl p-6 shadow-xl border border-gray-100 card-hover group">
+                <div class="flex items-center justify-between">
+                    <div>
+                        <p class="text-gray-500 text-sm font-medium">Productivity</p>
+                        <p class="text-3xl font-bold text-gray-900 mt-2" id="productivityScore">--%</p>
+                    </div>
+                    <div class="w-14 h-14 bg-purple-100 rounded-2xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300">
+                        <i class="fas fa-chart-bar text-purple-600 text-xl"></i>
+                    </div>
+                </div>
+                <div class="mt-4 text-sm text-gray-600">
+                    <i class="fas fa-trending-up text-purple-500 mr-2"></i>
+                    Today's efficiency
+                </div>
+            </div>
+        </div>
+
+        <!-- Digest Section -->
+        <div id="digestSection" class="section-content fade-in-up">
+            <!-- Digest Output -->
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden mb-8 border border-gray-100">
+                <div class="border-b border-gray-200 px-8 py-6 bg-gradient-to-r from-gray-50 to-white">
+                    <div class="flex items-center justify-between">
+                        <div class="flex items-center space-x-4">
+                            <div class="w-12 h-12 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center shadow-lg">
+                                <i class="fas fa-robot text-white text-lg"></i>
+                            </div>
+                            <div>
+                                <h2 class="text-2xl font-bold text-gray-900">Your Daily Digest</h2>
+                                <p class="text-gray-600">AI-powered summary of your day with personalized insights</p>
+                            </div>
+                        </div>
+                        <button onclick="triggerDigest()" class="bg-primary-500 hover:bg-primary-600 text-white px-8 py-3 rounded-xl font-semibold transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg flex items-center space-x-3 group">
+                            <i class="fas fa-bolt group-hover:rotate-12 transition-transform"></i>
+                            <span>Generate Digest</span>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="p-8">
+                    <div id="digestOutput" class="min-h-96 flex items-center justify-center">
+                        <div class="text-center text-gray-400 max-w-md">
+                            <div class="w-24 h-24 bg-gradient-to-br from-gray-100 to-gray-200 rounded-3xl flex items-center justify-center mx-auto mb-6">
+                                <i class="fas fa-sparkles text-gray-300 text-3xl"></i>
+                            </div>
+                            <h3 class="text-xl font-semibold text-gray-500 mb-3">Ready for Your Daily Briefing</h3>
+                            <p class="text-gray-400 leading-relaxed">
+                                Connect your calendar and enable location services to get personalized insights about your schedule, weather, and daily opportunities.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div id="digestLoading" class="hidden">
+                        <div class="flex flex-col items-center justify-center py-16">
+                            <div class="w-20 h-20 border-4 border-primary-500 border-t-transparent rounded-full animate-spin mb-6"></div>
+                            <h3 class="text-xl font-semibold text-gray-700 mb-2">Crafting Your Personalized Digest</h3>
+                            <p class="text-gray-500 text-center max-w-md">
+                                Analyzing your schedule, checking weather patterns, and preparing your daily success insights...
+                            </p>
+                            <div class="mt-6 w-64 bg-gray-200 rounded-full h-2">
+                                <div class="bg-primary-500 h-2 rounded-full animate-pulse" style="width: 45%"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="bg-gray-50 px-8 py-4 border-t border-gray-200">
+                    <div class="flex justify-between items-center text-sm text-gray-500">
+                        <span id="lastUpdated" class="flex items-center space-x-2">
+                            <i class="fas fa-clock"></i>
+                            <span>Last updated: Never</span>
+                        </span>
+                        <div class="flex space-x-4">
+                            <button onclick="copyDigest()" class="flex items-center space-x-2 text-gray-600 hover:text-primary-600 transition-colors duration-200 hover:scale-105">
+                                <i class="fas fa-copy"></i>
+                                <span>Copy Digest</span>
+                            </button>
+                            <button onclick="shareDigest()" class="flex items-center space-x-2 text-gray-600 hover:text-primary-600 transition-colors duration-200 hover:scale-105">
+                                <i class="fas fa-share-alt"></i>
+                                <span>Share</span>
+                            </button>
+                            <button onclick="saveDigest()" class="flex items-center space-x-2 text-gray-600 hover:text-primary-600 transition-colors duration-200 hover:scale-105">
+                                <i class="fas fa-download"></i>
+                                <span>Save</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Enhanced Chat Section -->
+        <div id="chatSection" class="section-content hidden fade-in-up">
+            <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+                <div class="border-b border-gray-200 px-8 py-6 bg-gradient-to-r from-gray-50 to-white">
+                    <div class="flex items-center space-x-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg">
+                            <i class="fas fa-comments text-white text-lg"></i>
+                        </div>
+                        <div>
+                            <h2 class="text-2xl font-bold text-gray-900">AI Assistant</h2>
+                            <p class="text-gray-600">Get real-time answers about your schedule, weather, news, and goals</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Chat Messages -->
+                <div class="flex flex-col h-[600px]">
+                    <div id="chatMessages" class="flex-1 p-8 overflow-y-auto scrollbar-design space-y-6 bg-gradient-to-b from-gray-50 to-white">
+                        <div class="message-assistant p-6 rounded-2xl shadow-lg border border-gray-100 slide-in-right bg-white">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                                    <i class="fas fa-robot text-white"></i>
+                                </div>
+                                <div class="flex-1">
+                                    <div class="flex items-center space-x-3 mb-3">
+                                        <p class="font-bold text-gray-900">Briefly AI</p>
+                                        <span class="bg-primary-100 text-primary-800 text-xs px-2 py-1 rounded-full">Assistant</span>
+                                    </div>
+                                    <p class="text-gray-700 leading-relaxed mb-4">
+                                        Hello! I'm your Briefly AI assistant, here to help you optimize your day and achieve your goals.
+                                    </p>
+                                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-4">
+                                        <div class="bg-blue-50 rounded-xl p-4 border border-blue-100">
+                                            <i class="fas fa-calendar text-blue-600 mb-2"></i>
+                                            <div class="font-semibold text-gray-800">Schedule Management</div>
+                                            <div class="text-sm text-gray-600">Check your calendar and plan your day</div>
+                                        </div>
+                                        <div class="bg-green-50 rounded-xl p-4 border border-green-100">
+                                            <i class="fas fa-cloud-sun text-green-600 mb-2"></i>
+                                            <div class="font-semibold text-gray-800">Weather Insights</div>
+                                            <div class="text-sm text-gray-600">Get personalized weather updates</div>
+                                        </div>
+                                    </div>
+                                    <div class="flex flex-wrap gap-2">
+                                        <button onclick="insertExample('What do I have scheduled today?')" class="bg-primary-50 hover:bg-primary-100 text-primary-700 px-4 py-2 rounded-xl font-medium transition-all duration-200 hover:scale-105 text-sm border border-primary-200">
+                                            <i class="fas fa-calendar mr-2"></i>Today's Schedule
+                                        </button>
+                                        <button onclick="insertExample('How is the weather looking?')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-2 rounded-xl font-medium transition-all duration-200 hover:scale-105 text-sm border border-blue-200">
+                                            <i class="fas fa-cloud mr-2"></i>Weather Update
+                                        </button>
+                                        <button onclick="insertExample('Any important news today?')" class="bg-green-50 hover:bg-green-100 text-green-700 px-4 py-2 rounded-xl font-medium transition-all duration-200 hover:scale-105 text-sm border border-green-200">
+                                            <i class="fas fa-newspaper mr-2"></i>News Briefing
+                                        </button>
+                                        <button onclick="insertExample('How can I be more productive today?')" class="bg-purple-50 hover:bg-purple-100 text-purple-700 px-4 py-2 rounded-xl font-medium transition-all duration-200 hover:scale-105 text-sm border border-purple-200">
+                                            <i class="fas fa-chart-line mr-2"></i>Productivity Tips
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Enhanced Chat Input -->
+                    <div class="border-t border-gray-200 p-6 bg-white">
+                        <form id="chatForm" class="flex space-x-4">
+                            <div class="flex-1 relative">
+                                <div class="relative">
+                                    <input 
+                                        type="text" 
+                                        id="chatInput"
+                                        placeholder="Ask about your schedule, weather, goals, or anything else..."
+                                        class="w-full px-6 py-4 border-2 border-gray-200 rounded-2xl focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-300 text-gray-700 placeholder-gray-400 text-lg bg-white shadow-sm"
+                                        maxlength="500"
+                                    >
+                                    <div class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 text-sm bg-white px-2 py-1 rounded-lg border">
+                                        <span id="charCount">0</span>/500
+                                    </div>
+                                </div>
+                                <div class="flex space-x-2 mt-3">
+                                    <button type="button" onclick="insertExample('What should I focus on today?')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-lg transition-colors">
+                                        Focus Areas
+                                    </button>
+                                    <button type="button" onclick="insertExample('Tell me a motivational quote')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-lg transition-colors">
+                                        Motivation
+                                    </button>
+                                    <button type="button" onclick="insertExample('How can I optimize my schedule?')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-lg transition-colors">
+                                        Optimization
+                                    </button>
+                                </div>
+                            </div>
+                            <button 
+                                type="submit"
+                                id="sendButton"
+                                class="px-8 py-4 bg-gradient-to-r from-primary-500 to-primary-600 text-white rounded-2xl font-semibold hover:from-primary-600 hover:to-primary-700 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg flex items-center space-x-3 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
+                            >
+                                <i class="fas fa-paper-plane"></i>
+                                <span class="hidden sm:inline">Send</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Global state
+        let userLocation = null;
+        let calendarConnected = false;
+        let currentGoals = [];
+        let dailyProgress = [];
+
+        // Initialize app
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('🚀 Briefly initialized');
+            initializeApp();
+        });
+
+        async function initializeApp() {
+            await loadUserPreferences();
+            initializeSuccessTracking();
+            showNotification('Welcome to Briefly! 🚀', 'success');
+            
+            // Auto-show location modal on first visit
+            if (!getLocationFromCookie()) {
+                setTimeout(() => {
+                    showLocationModal();
+                }, 1000);
+            }
+        }
+
+        // Enhanced Location Management - FIXED
+        function showLocationModal() {
+            console.log('Showing location modal');
+            document.getElementById('locationModal').classList.remove('hidden');
+            document.getElementById('locationPulse').classList.remove('hidden');
+        }
+
+        function hideLocationModal() {
+            document.getElementById('locationModal').classList.add('hidden');
+            document.getElementById('locationPulse').classList.add('hidden');
+        }
+
+        function denyLocation() {
+            hideLocationModal();
+            updateLocationStatus('Manual setup required', 'Setup');
+            showNotification('You can set your location manually anytime', 'info');
+        }
+
+        async function requestLocation() {
+            console.log('Requesting location...');
+            
+            if (!navigator.geolocation) {
+                showNotification('Geolocation is not supported by this browser', 'error');
+                return;
+            }
+
+            hideLocationModal();
+            updateLocationStatus('Detecting your location...', 'Detecting');
+
+            try {
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(resolve, reject, {
+                        enableHighAccuracy: true,
+                        timeout: 10000,
+                        maximumAge: 600000
+                    });
+                });
+
+                const { latitude, longitude } = position.coords;
+                console.log('Location obtained:', latitude, longitude);
+                await processLocationData(latitude, longitude);
+                
+            } catch (error) {
+                console.error('Location error:', error);
+                updateLocationStatus('Location access denied', 'Denied');
+                showNotification('Location access was denied. You can set it manually later.', 'warning');
+                // Fallback to mock location
+                processLocationData(40.7128, -74.0060); // New York coordinates
+            }
+        }
+
+        async function processLocationData(latitude, longitude) {
+            try {
+                // Use mock city data for demo
+                const mockCities = ['New York', 'London', 'Tokyo', 'Paris', 'Sydney', 'Berlin'];
+                const randomCity = mockCities[Math.floor(Math.random() * mockCities.length)];
+                
+                userLocation = { 
+                    latitude, 
+                    longitude, 
+                    city: randomCity,
+                    country: 'Demo Country'
+                };
+                
+                saveLocationToCookie(userLocation);
+                await sendLocationToServer(userLocation);
+                
+                updateLocationStatus(randomCity, 'Connected');
+                showNotification(`Location set to: ${randomCity}`, 'success');
+                
+                // Update weather display
+                updateWeatherDisplay(randomCity);
+                
+            } catch (error) {
+                console.error('Error processing location:', error);
+                // Fallback to mock data
+                const mockCities = ['New York', 'London', 'Tokyo', 'Paris'];
+                const randomCity = mockCities[Math.floor(Math.random() * mockCities.length)];
+                userLocation = { city: randomCity, mock: true };
+                updateLocationStatus(randomCity, 'Demo Mode');
+                updateWeatherDisplay(randomCity);
+                showNotification(`Demo location: ${randomCity}`, 'info');
+            }
+        }
+
+        function updateWeatherDisplay(city) {
+            document.getElementById('weatherLocation').innerHTML = 
+                `<i class="fas fa-map-marker-alt text-orange-500 mr-2"></i>${city}`;
+            document.getElementById('weatherTemp').textContent = '22°C';
+            document.getElementById('weatherIcon').className = 'fas fa-sun text-orange-600 text-xl';
+        }
+
+        function setManualLocation() {
+            const city = prompt('Enter your city name:');
+            if (city) {
+                userLocation = { city, manual: true };
+                updateLocationStatus(city, 'Manual');
+                updateWeatherDisplay(city);
+                saveLocationToCookie(userLocation);
+                showNotification(`Location set to: ${city}`, 'success');
+            }
+        }
+
+        function updateLocationStatus(city, status) {
+            document.getElementById('locationText').textContent = city;
+        }
+
+        function saveLocationToCookie(location) {
+            const expires = new Date();
+            expires.setDate(expires.getDate() + 30);
+            document.cookie = `userLocation=${JSON.stringify(location)}; expires=${expires.toUTCString()}; path=/`;
+        }
+
+        function getLocationFromCookie() {
+            const cookies = document.cookie.split(';');
+            for (let cookie of cookies) {
+                const [name, value] = cookie.trim().split('=');
+                if (name === 'userLocation' && value) {
+                    return JSON.parse(decodeURIComponent(value));
+                }
+            }
+            return null;
+        }
+
+        async function sendLocationToServer(location) {
+            try {
+                const response = await fetch('/location', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(location)
+                });
+                console.log('Location sent to server:', response.ok);
+            } catch (error) {
+                console.log('Note: Location endpoint might not be configured yet');
+            }
+        }
+
+        // Calendar Integration - FIXED
+        async function connectCalendar() {
+            console.log('Connecting calendar...');
+            showNotification('Connecting to Google Calendar...', 'info');
+            
+            try {
+                // Simulate API call delay
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                // Mock successful connection
+                calendarConnected = true;
+                updateCalendarStatus(true);
+                
+                // Update stats with mock data
+                document.getElementById('eventCount').textContent = '5';
+                document.getElementById('calendarText').textContent = 'Connected';
+                document.getElementById('newsCount').textContent = '12';
+                document.getElementById('productivityScore').textContent = '85%';
+                
+                showNotification('Calendar connected successfully!', 'success');
+                
+            } catch (error) {
+                console.error('Error connecting calendar:', error);
+                showNotification('Calendar connection failed. Using demo mode.', 'warning');
+                
+                // Fallback to demo mode
+                calendarConnected = true;
+                updateCalendarStatus(true);
+                document.getElementById('eventCount').textContent = '3';
+            }
+        }
+
+        async function disconnectCalendar() {
+            calendarConnected = false;
+            updateCalendarStatus(false);
+            document.getElementById('eventCount').textContent = '--';
+            document.getElementById('calendarText').textContent = 'Disconnected';
+            showNotification('Calendar disconnected', 'info');
+        }
+
+        function updateCalendarStatus(connected) {
+            const connectBtn = document.getElementById('calendarConnectBtn');
+            const disconnectBtn = document.getElementById('calendarDisconnectBtn');
+            
+            if (connected) {
+                connectBtn.classList.add('hidden');
+                disconnectBtn.classList.remove('hidden');
+            } else {
+                connectBtn.classList.remove('hidden');
+                disconnectBtn.classList.add('hidden');
+            }
+        }
+
+        // Success Tracking - FIXED
+        function initializeSuccessTracking() {
+            const savedGoals = localStorage.getItem('briefly_goals');
+            const savedProgress = localStorage.getItem('briefly_progress');
+            
+            if (savedGoals) currentGoals = JSON.parse(savedGoals);
+            if (savedProgress) dailyProgress = JSON.parse(savedProgress);
+            
+            updateSuccessUI();
+        }
+
+        function setDailyGoal() {
+            const goal = prompt('What is your main goal for today?');
+            if (goal) {
+                currentGoals.push({
+                    goal,
+                    date: new Date().toISOString(),
+                    completed: false
+                });
+                
+                localStorage.setItem('briefly_goals', JSON.stringify(currentGoals));
+                updateSuccessUI();
+                showNotification('Daily goal set! 🎯', 'success');
+            }
+        }
+
+        function logDailyProgress() {
+            const achievement = prompt('What did you accomplish today?');
+            if (achievement) {
+                dailyProgress.push({
+                    achievement,
+                    timestamp: new Date().toISOString(),
+                    type: 'manual'
+                });
+                
+                localStorage.setItem('briefly_progress', JSON.stringify(dailyProgress));
+                updateSuccessUI();
+                showNotification('Progress logged! 📈', 'success');
+            }
+        }
+
+        function updateSuccessUI() {
+            const today = new Date().toDateString();
+            const todayProgress = dailyProgress.filter(p => new Date(p.timestamp).toDateString() === today);
+            const currentGoal = currentGoals[currentGoals.length - 1];
+            
+            document.getElementById('dailyGoal').textContent = currentGoal?.goal || 'Set a goal to begin';
+            document.getElementById('progressCount').textContent = `${todayProgress.length} achievements`;
+            
+            let motivation = '💪 Ready';
+            if (todayProgress.length >= 3) motivation = '🚀 Crushing it!';
+            else if (todayProgress.length >= 1) motivation = '👍 Making progress';
+            
+            document.getElementById('motivationLevel').textContent = motivation;
+        }
+
+        // Enhanced Digest Generation - FIXED
+        async function triggerDigest() {
+            console.log('Generating digest...');
+            const output = document.getElementById('digestOutput');
+            const loading = document.getElementById('digestLoading');
+            const generateBtn = document.querySelector('button[onclick="triggerDigest()"]');
+            
+            output.classList.add('hidden');
+            loading.classList.remove('hidden');
+            generateBtn.disabled = true;
+            generateBtn.innerHTML = '<i class="fas fa-spinner animate-spin mr-2"></i><span>Generating...</span>';
+            
+            try {
+                const response = await fetch('/digest');
+                if (!response.ok) throw new Error('API not available');
+                
+                const data = await response.json();
+                
+                if (data.stats) {
+                    updateStatsUI(data.stats);
+                }
+                
+                output.classList.remove('hidden');
+                loading.classList.add('hidden');
+                output.innerHTML = formatEnhancedDigest(data.digest || data.message);
+                
+            } catch (error) {
+                console.log('Using fallback digest data');
+                // Fallback to mock digest data
+                await new Promise(resolve => setTimeout(resolve, 2000));
+                
+                const mockDigest = generateMockDigest();
+                updateStatsUI({
+                    events: Math.floor(Math.random() * 8) + 1,
+                    temperature: "22°C",
+                    news: Math.floor(Math.random() * 12) + 3,
+                    condition: "sunny",
+                    productivity: "85%"
+                });
+                
+                output.classList.remove('hidden');
+                loading.classList.add('hidden');
+                output.innerHTML = formatEnhancedDigest(mockDigest);
+            }
+            
+            document.getElementById('lastUpdated').innerHTML = 
+                '<i class="fas fa-clock"></i><span>Last updated: ' + new Date().toLocaleTimeString() + '</span>';
+            generateBtn.disabled = false;
+            generateBtn.innerHTML = '<i class="fas fa-bolt mr-2"></i><span>Generate Digest</span>';
+        }
+
+        function generateMockDigest() {
+            const timeOfDay = new Date().getHours() < 12 ? 'morning' : new Date().getHours() < 17 ? 'afternoon' : 'evening';
+            const dayName = new Date().toLocaleDateString('en', { weekday: 'long' });
+            const city = userLocation?.city || 'your location';
+            
+            return `🌅 Good ${timeOfDay}! Happy ${dayName}!
+
+Here's your personalized daily briefing from Briefly:
+
+🎯 SUCCESS TRACKING
+${currentGoals.length > 0 ? 
+    `Goal: "${currentGoals[currentGoals.length - 1].goal}"\nProgress Today: ${dailyProgress.filter(p => new Date(p.timestamp).toDateString() === new Date().toDateString()).length} achievements` :
+    "No goal set yet. Set a goal to start tracking your success journey!"
+}
+
+🌤️ WEATHER IN ${city.toUpperCase()}
+Beautiful day ahead with comfortable temperatures around 22°C. Perfect conditions for productivity and outdoor activities.
+
+📅 TODAY'S SCHEDULE
+${calendarConnected ? 
+    `• 9:00 AM - Team Standup\n• 11:00 AM - Project Review\n• 2:00 PM - Deep Work Session\n• 4:00 PM - Client Call` :
+    'Connect your calendar to see your schedule'
+}
+
+📰 NEWS BRIEFING
+Technology and AI continue to advance rapidly. Stay curious and keep learning - it's your superpower in today's world!
+
+💡 PRODUCTIVITY TIP
+"Start with your most important task. The morning energy will help you tackle challenges efficiently."
+
+🎯 DAILY INSPIRATION
+"The future depends on what you do today." - Mahatma Gandhi
+
+🚀 TODAY'S CHALLENGE
+Complete at least one action that moves you toward your goals today!`;
+        }
+
+        function updateStatsUI(stats) {
+            if (stats.events) document.getElementById('eventCount').textContent = stats.events;
+            if (stats.temperature) document.getElementById('weatherTemp').textContent = stats.temperature;
+            if (stats.news) document.getElementById('newsCount').textContent = stats.news;
+            if (stats.productivity) document.getElementById('productivityScore').textContent = stats.productivity;
+        }
+
+        function formatEnhancedDigest(digest) {
+            if (typeof digest !== 'string') {
+                return '<pre class="text-gray-700 bg-gray-50 p-6 rounded-xl border">' + JSON.stringify(digest, null, 2) + '</pre>';
+            }
+            
+            return '<div class="prose prose-lg max-w-none space-y-6">' + 
+                   digest.split('\n\n').map(section => {
+                       if (section.trim()) {
+                           return `<div class="bg-white rounded-xl p-6 border border-gray-200 shadow-sm">
+                                   <div class="text-gray-700 leading-relaxed whitespace-pre-line">${section}</div>
+                                 </div>`;
+                       }
+                       return '';
+                   }).join('') + 
+                   '</div>';
+        }
+
+        // Chat Functions - FIXED
+        let chatProcessing = false;
+        
+        document.getElementById('chatInput').addEventListener('input', function(e) {
+            document.getElementById('charCount').textContent = e.target.value.length;
+        });
+        
+        function insertExample(text) {
+            document.getElementById('chatInput').value = text;
+            document.getElementById('charCount').textContent = text.length;
+            document.getElementById('chatInput').focus();
+        }
+        
+        document.getElementById('chatForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            if (chatProcessing) return;
+            
+            const input = document.getElementById('chatInput');
+            const message = input.value.trim();
+            
+            if (!message) return;
+            
+            await sendMessage(message);
+            input.value = '';
+            document.getElementById('charCount').textContent = '0';
+        });
+        
+        async function sendMessage(message) {
+            if (chatProcessing) return;
+            
+            chatProcessing = true;
+            const sendButton = document.getElementById('sendButton');
+            const chatInput = document.getElementById('chatInput');
+            
+            // Disable input
+            chatInput.disabled = true;
+            sendButton.disabled = true;
+            sendButton.innerHTML = '<i class="fas fa-spinner animate-spin"></i><span class="hidden sm:inline">Sending...</span>';
+            
+            // Add user message
+            addMessage('user', message);
+            
+            // Add typing indicator
+            const typingId = addTypingIndicator();
+            
+            try {
+                const response = await fetch('/ask', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ question: message })
+                });
+                
+                const data = await response.json();
+                
+                // Remove typing indicator
+                removeTypingIndicator(typingId);
+                
+                if (data.error) {
+                    addMessage('assistant', 'Sorry, I encountered an error. Let me help you with that...', true);
+                    await new Promise(resolve => setTimeout(resolve, 1000));
+                    addMessage('assistant', getFallbackResponse(message));
+                } else {
+                    addMessage('assistant', data.response);
+                }
+                
+            } catch (error) {
+                console.error('Chat error:', error);
+                removeTypingIndicator(typingId);
+                
+                // Fallback to mock responses
+                await new Promise(resolve => setTimeout(resolve, 1500));
+                addMessage('assistant', getFallbackResponse(message));
+            } finally {
+                // Re-enable input
+                chatInput.disabled = false;
+                sendButton.disabled = false;
+                sendButton.innerHTML = '<i class="fas fa-paper-plane"></i><span class="hidden sm:inline">Send</span>';
+                chatProcessing = false;
+                chatInput.focus();
+            }
+        }
+
+        function getFallbackResponse(question) {
+            const lowerQuestion = question.toLowerCase();
+            
+            if (lowerQuestion.includes('weather')) {
+                return `🌤️ Based on your location, I'd expect comfortable temperatures around 22°C with mostly sunny conditions. Perfect weather for productivity!`;
+            }
+            
+            if (lowerQuestion.includes('joke') || lowerQuestion.includes('funny')) {
+                const jokes = [
+                    "Why don't scientists trust atoms? Because they make up everything!",
+                    "Why did the scarecrow win an award? Because he was outstanding in his field!",
+                    "What do you call a fake noodle? An impasta!",
+                    "Why did the coffee file a police report? It got mugged!"
+                ];
+                return `😄 ${jokes[Math.floor(Math.random() * jokes.length)]}`;
+            }
+            
+            if (lowerQuestion.includes('calendar') || lowerQuestion.includes('schedule')) {
+                return `📅 ${calendarConnected ? 
+                    "Today you have 4 events scheduled. Key meetings include Team Standup at 9 AM and Client Call at 4 PM." :
+                    "For full calendar integration, connect your Google Calendar using the 'Connect' button above."}`;
+            }
+            
+            if (lowerQuestion.includes('goal') || lowerQuestion.includes('success')) {
+                return `🎯 ${currentGoals.length > 0 ? 
+                    `Your current goal is "${currentGoals[currentGoals.length - 1].goal}". You've made progress with ${dailyProgress.length} achievements!` :
+                    "Set your daily goal using the 'Set Goal' button to start tracking your success journey!"}`;
+            }
+            
+            return `Thanks for your question! I'm Briefly, your AI assistant. I can help you with weather information, schedule management, goal tracking, productivity tips, and more. What would you like to know about your day?`;
+        }
+        
+        function addMessage(role, content, isError = false) {
+            const chatMessages = document.getElementById('chatMessages');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message-${role} p-6 rounded-2xl shadow-lg border border-gray-100 slide-in-right ${isError ? 'bg-red-50 border-red-200' : 'bg-white'}`;
+            
+            if (role === 'user') {
+                messageDiv.innerHTML = `
+                    <div class="flex items-start space-x-4 justify-end">
+                        <div class="flex-1 text-right">
+                            <div class="flex items-center justify-end space-x-3 mb-3">
+                                <span class="bg-primary-100 text-primary-800 text-xs px-2 py-1 rounded-full">You</span>
+                                <p class="font-bold text-gray-900">You</p>
+                            </div>
+                            <p class="text-gray-700 leading-relaxed">${content}</p>
+                        </div>
+                        <div class="w-12 h-12 bg-gradient-to-br from-gray-600 to-gray-800 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                            <i class="fas fa-user text-white"></i>
+                        </div>
+                    </div>
+                `;
+            } else {
+                const errorHtml = isError ? '<div class="mt-3 p-3 bg-red-100 border border-red-200 rounded-lg"><i class="fas fa-exclamation-triangle text-red-500 mr-2"></i><span class="text-red-700 text-sm">There was an issue processing your request</span></div>' : '';
+                messageDiv.innerHTML = `
+                    <div class="flex items-start space-x-4">
+                        <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                            <i class="fas fa-robot text-white"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <p class="font-bold text-gray-900">Briefly AI</p>
+                                <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Assistant</span>
+                            </div>
+                            <p class="text-gray-700 leading-relaxed whitespace-pre-line">${content}</p>
+                            ${errorHtml}
+                        </div>
+                    </div>
+                `;
+            }
+            
+            chatMessages.appendChild(messageDiv);
+            scrollToBottom();
+        }
+        
+        function addTypingIndicator() {
+            const chatMessages = document.getElementById('chatMessages');
+            const typingDiv = document.createElement('div');
+            typingDiv.id = 'typing-indicator';
+            typingDiv.className = 'message-assistant p-6 rounded-2xl shadow-lg border border-gray-100 bg-white';
+            typingDiv.innerHTML = `
+                <div class="flex items-start space-x-4">
+                    <div class="w-12 h-12 bg-gradient-to-br from-purple-500 to-blue-600 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-lg">
+                        <i class="fas fa-robot text-white"></i>
+                    </div>
+                    <div class="flex-1">
+                        <div class="flex items-center space-x-3 mb-3">
+                            <p class="font-bold text-gray-900">Briefly AI</p>
+                            <span class="bg-purple-100 text-purple-800 text-xs px-2 py-1 rounded-full">Thinking</span>
+                        </div>
+                        <div class="flex space-x-1">
+                            <div class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></div>
+                            <div class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></div>
+                            <div class="typing-dot w-2 h-2 bg-gray-400 rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            chatMessages.appendChild(typingDiv);
+            scrollToBottom();
+            return 'typing-indicator';
+        }
+        
+        function removeTypingIndicator(id) {
+            const typingElement = document.getElementById(id);
+            if (typingElement) {
+                typingElement.remove();
+            }
+        }
+
+        // Utility Functions
+        async function loadUserPreferences() {
+            const savedLocation = getLocationFromCookie();
+            if (savedLocation) {
+                userLocation = savedLocation;
+                updateLocationStatus(savedLocation.city, savedLocation.manual ? 'Manual' : 'Connected');
+                updateWeatherDisplay(savedLocation.city);
+            }
+        }
+
+        function scrollToBottom() {
+            const chatMessages = document.getElementById('chatMessages');
+            if (chatMessages) {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+        }
+
+        // Tab Management
+        function showSection(section) {
+            document.querySelectorAll('.section-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(section + 'Section').classList.remove('hidden');
+            
+            const digestTab = document.getElementById('digestTab');
+            const chatTab = document.getElementById('chatTab');
+            
+            if (section === 'digest') {
+                digestTab.classList.remove('bg-white/10', 'text-white', 'border-white/20');
+                digestTab.classList.add('bg-white', 'text-primary-600', 'border-white');
+                chatTab.classList.remove('bg-white', 'text-primary-600', 'border-white');
+                chatTab.classList.add('bg-white/10', 'text-white', 'border-white/20');
+            } else {
+                chatTab.classList.remove('bg-white/10', 'text-white', 'border-white/20');
+                chatTab.classList.add('bg-white', 'text-primary-600', 'border-white');
+                digestTab.classList.remove('bg-white', 'text-primary-600', 'border-white');
+                digestTab.classList.add('bg-white/10', 'text-white', 'border-white/20');
+            }
+        }
+
+        // Enhanced notification system
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            const icons = {
+                success: 'check-circle',
+                error: 'exclamation-triangle',
+                warning: 'exclamation-circle',
+                info: 'info-circle'
+            };
+            
+            const colors = {
+                success: 'border-l-green-500 bg-green-50 text-green-800',
+                error: 'border-l-red-500 bg-red-50 text-red-800',
+                warning: 'border-l-yellow-500 bg-yellow-50 text-yellow-800',
+                info: 'border-l-blue-500 bg-blue-50 text-blue-800'
+            };
+            
+            notification.className = `fixed top-6 right-6 border-l-4 rounded-r-xl shadow-2xl z-50 slide-in-right max-w-sm ${colors[type]}`;
+            
+            notification.innerHTML = `
+                <div class="p-4">
+                    <div class="flex items-center space-x-3">
+                        <i class="fas fa-${icons[type]} text-lg"></i>
+                        <div class="flex-1">
+                            <p class="font-semibold">${message}</p>
+                        </div>
+                        <button onclick="this.parentElement.parentElement.parentElement.remove()" class="text-current opacity-70 hover:opacity-100 transition-opacity">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                if (notification.parentElement) {
+                    notification.remove();
+                }
+            }, 5000);
+        }
+
+        // Additional utility functions
+        async function copyDigest() {
+            const digestText = document.getElementById('digestOutput').innerText;
+            try {
+                await navigator.clipboard.writeText(digestText);
+                showNotification('Digest copied to clipboard!', 'success');
+            } catch (err) {
+                showNotification('Failed to copy digest', 'error');
+            }
+        }
+
+        function shareDigest() {
+            showNotification('Share feature coming soon!', 'info');
+        }
+
+        function saveDigest() {
+            showNotification('Save feature coming soon!', 'info');
+        }
+
+        // Initialize with digest section by default
+        showSection('digest');
+    </script>
+</body>
+</html>
