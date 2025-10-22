@@ -1,6 +1,6 @@
 import type { Context } from "hono";
 import { getEnhancedDailyDigestAgent, getSimpleDailyDigestAgent } from "../agents/daily-digest-agent/agent";
-import { successTracker } from "../agents/agent";
+import { successTracker } from "../agents/agent"; // Import from main agent file
 
 export const digestHandler = async (c: Context) => {
     try {

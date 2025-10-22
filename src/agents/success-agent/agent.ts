@@ -1,112 +1,177 @@
 import { AgentBuilder } from "@iqai/adk";
 import { env } from "../../env";
 
-export const getSuccessAgent = async () => {
-    return AgentBuilder.create("success_coach_agent")
-        .withDescription("AI success coach for goal tracking and productivity optimization")
-        .withInstruction(`
-            You are a professional success coach. Help users achieve their goals through:
-            
-            1. **Goal Setting & Tracking** - Break down big goals into daily actions
-            2. **Habit Formation** - Guide consistent daily routines
-            3. **Productivity Optimization** - Suggest efficiency improvements
-            4. **Motivational Support** - Provide encouragement and mindset tips
-            
-            Be practical, encouraging, and focus on actionable advice.
-        `)
-        .withModel(env.LLM_MODEL)
-        .build();
+// Success resources
+export const SUCCESS_RESOURCES = {
+    quotes: [
+        "The future depends on what you do today.",
+        "Don't watch the clock; do what it does. Keep going.",
+        "The way to get started is to quit talking and begin doing.",
+        "It's not whether you get knocked down, it's whether you get up.",
+        "Your time is limited, don't waste it living someone else's life."
+    ],
+    tips: [
+        "Break large goals into small, daily actions",
+        "Celebrate small wins to maintain motivation",
+        "Review your progress at the end of each day",
+        "Stay consistent - daily effort compounds over time",
+        "Focus on progress, not perfection"
+    ]
 };
 
-// Simple success tracking system
+// Success tracker class
 export class SuccessTracker {
-    private userGoals: Map<string, any> = new Map();
-    private dailyProgress: Map<string, any> = new Map();
+    private userGoals: Map<string, { goal: string; deadline?: Date }> = new Map();
+    private userProgress: Map<string, Array<{ achievement: string; timestamp: Date }>> = new Map();
 
-    setGoal(userId: string, goal: string, deadline: string) {
-        this.userGoals.set(userId, { goal, deadline, createdAt: new Date() });
+    setGoal(userId: string, goal: string, deadline?: Date) {
+        this.userGoals.set(userId, { goal, deadline });
     }
 
     logProgress(userId: string, achievement: string) {
-        const progress = this.dailyProgress.get(userId) || [];
-        progress.push({
+        if (!this.userProgress.has(userId)) {
+            this.userProgress.set(userId, []);
+        }
+        this.userProgress.get(userId)!.push({
             achievement,
-            date: new Date(),
-            timestamp: Date.now()
+            timestamp: new Date()
         });
-        this.dailyProgress.set(userId, progress);
     }
 
     getSuccessInsights(userId: string, calendarEvents: any[] = []) {
-        const goal = this.userGoals.get(userId);
-        const progress = this.dailyProgress.get(userId) || [];
+        const userGoal = this.userGoals.get(userId);
+        const userProgress = this.userProgress.get(userId) || [];
         
-        // Calculate productivity metrics
-        const productiveHours = calendarEvents.filter(event => 
-            event.title?.toLowerCase().includes('focus') || 
-            event.title?.toLowerCase().includes('work') ||
-            event.title?.toLowerCase().includes('meeting')
+        // Calculate productive hours from calendar events
+        const productiveHours = this.calculateProductiveHours(calendarEvents);
+        
+        // Calculate today's progress
+        const today = new Date().toDateString();
+        const progressToday = userProgress.filter(p => 
+            new Date(p.timestamp).toDateString() === today
         ).length;
 
-        const recentProgress = progress.filter((p: any) => {
-            const progressDate = new Date(p.date);
-            const today = new Date();
-            return progressDate.toDateString() === today.toDateString();
-        });
+        // Determine motivation level
+        let motivationLevel = "Ready to start!";
+        if (progressToday >= 3) motivationLevel = "Crushing it! 🚀";
+        else if (progressToday >= 1) motivationLevel = "Making progress! 👍";
+        else if (userGoal) motivationLevel = "Ready to begin! 💪";
+
+        // Generate suggestions
+        const suggestions = this.generateSuggestions(userGoal, progressToday, productiveHours);
 
         return {
-            hasGoal: !!goal,
-            goalText: goal?.goal || "No goal set yet",
-            progressToday: recentProgress.length,
+            hasGoal: !!userGoal,
+            goalText: userGoal?.goal || "",
+            progressToday,
+            motivationLevel,
             productiveHours,
-            motivationLevel: this.calculateMotivationLevel(progress.length, productiveHours),
-            suggestions: this.generateSuccessSuggestions(goal, productiveHours)
+            suggestions,
+            totalAchievements: userProgress.length
         };
     }
 
-    private calculateMotivationLevel(progressCount: number, productiveHours: number): string {
-        const score = progressCount + productiveHours;
-        if (score >= 5) return "high";
-        if (score >= 2) return "medium";
-        return "needs boost";
+    private calculateProductiveHours(calendarEvents: any[]): number {
+        if (!calendarEvents || calendarEvents.length === 0) {
+            return 2; // Default assumption
+        }
+        
+        // Simple calculation - count events as productive time
+        return Math.min(calendarEvents.length, 8);
     }
 
-    private generateSuccessSuggestions(goal: any, productiveHours: number): string[] {
-        const suggestions = [];
+    private generateSuggestions(userGoal: any, progressToday: number, productiveHours: number): string[] {
+        const suggestions: string[] = [];
         
-        if (!goal) {
-            suggestions.push("Set a clear goal to focus your daily efforts");
+        if (!userGoal) {
+            suggestions.push("Set a specific goal for today to get started");
+        } else if (progressToday === 0) {
+            suggestions.push("Take the first step toward your goal today");
+        } else if (progressToday < 2) {
+            suggestions.push("Build on your early progress with another small win");
+        } else {
+            suggestions.push("Maintain your momentum with consistent action");
         }
-        
-        if (productiveHours < 2) {
-            suggestions.push("Schedule at least 2 hours of focused work today");
+
+        if (productiveHours < 3) {
+            suggestions.push("Schedule focused work blocks in your calendar");
+        } else if (productiveHours > 6) {
+            suggestions.push("Remember to take breaks to maintain energy");
         }
-        
-        if (productiveHours >= 6) {
-            suggestions.push("Great productivity! Remember to take breaks and hydrate");
-        }
-        
-        suggestions.push("Review your progress at the end of the day");
-        
+
+        suggestions.push("Review your progress and adjust your approach as needed");
+
         return suggestions;
     }
 }
 
-// Success quotes and tips database
-export const SUCCESS_RESOURCES = {
-    quotes: [
-        "The only way to do great work is to love what you do. - Steve Jobs",
-        "Success is not final, failure is not fatal: it is the courage to continue that counts. - Winston Churchill",
-        "The future depends on what you do today. - Mahatma Gandhi",
-        "Don't watch the clock; do what it does. Keep going. - Sam Levenson",
-        "The way to get started is to quit talking and begin doing. - Walt Disney"
-    ],
-    
-    tips: [
-        "Start your day with your most important task",
-        "Break large goals into small, manageable steps",
-        "Track your progress daily to maintain momentum",
-        "Celebrate small wins along the way",
-        "Learn from setbacks rather than being discouraged by them"
-    ]
+// Create global instance
+export const successTracker = new SuccessTracker();
+
+// Success agent
+export const getSuccessAgent = async () => {
+    return AgentBuilder.create("success_agent")
+        .withDescription("Success coaching and goal tracking agent")
+        .withInstruction(`
+            You are a success coach and goal achievement specialist. Help users:
+            - Set meaningful goals
+            - Track progress
+            - Stay motivated
+            - Overcome obstacles
+            - Celebrate achievements
+
+            Always be encouraging, practical, and focused on action.
+        `)
+        .withModel(env.LLM_MODEL)
+        .withTools([
+            {
+                name: "setGoal",
+                description: "Set or update a user's goal",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        userId: { type: "string" },
+                        goal: { type: "string" },
+                        deadline: { type: "string" }
+                    },
+                    required: ["userId", "goal"]
+                },
+                execute: async (args: any) => {
+                    successTracker.setGoal(args.userId, args.goal, args.deadline ? new Date(args.deadline) : undefined);
+                    return { success: true, message: "Goal set successfully!" };
+                }
+            },
+            {
+                name: "logProgress",
+                description: "Log progress towards a goal",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        userId: { type: "string" },
+                        achievement: { type: "string" }
+                    },
+                    required: ["userId", "achievement"]
+                },
+                execute: async (args: any) => {
+                    successTracker.logProgress(args.userId, args.achievement);
+                    return { success: true, message: "Progress logged successfully!" };
+                }
+            },
+            {
+                name: "getSuccessInsights",
+                description: "Get insights about user's success journey",
+                parameters: {
+                    type: "object",
+                    properties: {
+                        userId: { type: "string" },
+                        calendarEvents: { type: "array" }
+                    },
+                    required: ["userId"]
+                },
+                execute: async (args: any) => {
+                    return successTracker.getSuccessInsights(args.userId, args.calendarEvents);
+                }
+            }
+        ])
+        .build();
 };

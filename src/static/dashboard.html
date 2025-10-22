@@ -207,7 +207,7 @@
                 <div class="flex items-center space-x-4">
                     <div class="relative">
                         <div class="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center backdrop-blur-sm border border-white/30 shadow-lg">
-                            <i class="fas fa-sparkles text-white text-xl"></i>
+                            <i class="fas fa-robot text-white text-xl"></i>
                         </div>
                         <div class="absolute -top-1 -right-1 w-5 h-5 bg-success-500 rounded-full flex items-center justify-center border-2 border-white">
                             <i class="fas fa-bolt text-white text-xs"></i>
@@ -521,7 +521,7 @@
                                     </div>
                                     <div class="flex flex-wrap gap-2">
                                         <button onclick="insertExample('What do I have scheduled today?')" class="bg-primary-50 hover:bg-primary-100 text-primary-700 px-4 py-2 rounded-xl font-medium transition-all duration-200 hover:scale-105 text-sm border border-primary-200">
-                                            <i class="fas fa-calendar mr-2"></i>Today's Schedule
+                                            <i class="fas fa-calendar mr-2"></i>Help me Achieve
                                         </button>
                                         <button onclick="insertExample('How is the weather looking?')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-2 rounded-xl font-medium transition-all duration-200 hover:scale-105 text-sm border border-blue-200">
                                             <i class="fas fa-cloud mr-2"></i>Weather Update
@@ -554,15 +554,22 @@
                                         <span id="charCount">0</span>/500
                                     </div>
                                 </div>
-                                <div class="flex space-x-2 mt-3">
-                                    <button type="button" onclick="insertExample('What should I focus on today?')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-lg transition-colors">
-                                        Focus Areas
+                                <!-- In your dashboard.html chat section, update the example buttons -->
+                                <div class="flex flex-wrap gap-2">
+                                    <button onclick="insertExample('What do I have scheduled today?')" class="bg-primary-50 hover:bg-primary-100 text-primary-700 px-4 py-2 rounded-xl font-medium transition-all duration-200 hover:scale-105 text-sm border border-primary-200">
+                                        <i class="fas fa-calendar mr-2"></i>Today's Schedule
                                     </button>
-                                    <button type="button" onclick="insertExample('Tell me a motivational quote')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-lg transition-colors">
-                                        Motivation
+                                    <button onclick="insertExample('How is the weather looking?')" class="bg-blue-50 hover:bg-blue-100 text-blue-700 px-4 py-2 rounded-xl font-medium transition-all duration-200 hover:scale-105 text-sm border border-blue-200">
+                                        <i class="fas fa-cloud mr-2"></i>Weather Update
                                     </button>
-                                    <button type="button" onclick="insertExample('How can I optimize my schedule?')" class="text-xs bg-gray-100 hover:bg-gray-200 text-gray-600 px-3 py-1 rounded-lg transition-colors">
-                                        Optimization
+                                    <button onclick="insertExample('Give me today\\'s news briefing')" class="bg-green-50 hover:bg-green-100 text-green-700 px-4 py-2 rounded-xl font-medium transition-all duration-200 hover:scale-105 text-sm border border-green-200">
+                                        <i class="fas fa-newspaper mr-2"></i>News Briefing
+                                    </button>
+                                    <button onclick="insertExample('Any tech news today?')" class="bg-purple-50 hover:bg-purple-100 text-purple-700 px-4 py-2 rounded-xl font-medium transition-all duration-200 hover:scale-105 text-sm border border-purple-200">
+                                        <i class="fas fa-robot mr-2"></i>Tech News
+                                    </button>
+                                    <button onclick="insertExample('How can I be more productive today?')" class="bg-orange-50 hover:bg-orange-100 text-orange-700 px-4 py-2 rounded-xl font-medium transition-all duration-200 hover:scale-105 text-sm border border-orange-200">
+                                        <i class="fas fa-chart-line mr-2"></i>Productivity Tips
                                     </button>
                                 </div>
                             </div>
@@ -581,6 +588,148 @@
         </div>
     </main>
 
+    <!-- Auth Modal -->
+<div id="authModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 fade-in-up">
+  <div class="bg-white rounded-2xl p-8 mx-4 max-w-md w-full glass-effect border border-white/20 shadow-2xl">
+    <div class="text-center">
+      <div class="w-20 h-20 bg-gradient-to-br from-primary-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+        <i class="fas fa-user text-white text-2xl"></i>
+      </div>
+      
+      <!-- Tabs for Login/Register -->
+      <div class="flex border-b border-gray-200 mb-6">
+        <button id="loginTab" class="flex-1 py-3 font-semibold text-primary-600 border-b-2 border-primary-600 transition-colors">
+          Login
+        </button>
+        <button id="registerTab" class="flex-1 py-3 font-semibold text-gray-500 border-b-2 border-transparent hover:text-gray-700 transition-colors">
+          Register
+        </button>
+      </div>
+
+      <!-- Login Form -->
+      <div id="loginForm" class="space-y-4">
+        <h3 class="text-2xl font-bold text-gray-900 mb-3">Welcome Back</h3>
+        <p class="text-gray-600 mb-6 leading-relaxed">
+          Sign in to your Briefly account to continue.
+        </p>
+        <div class="space-y-4">
+          <input 
+            type="email" 
+            id="loginEmail"
+            placeholder="your@email.com"
+            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-300 text-gray-700 placeholder-gray-400"
+          >
+          <button onclick="handleLogin()" class="w-full px-6 py-3 bg-gradient-to-r from-primary-600 to-purple-600 text-white rounded-xl font-semibold hover:from-primary-700 hover:to-purple-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95">
+            Sign In
+          </button>
+        </div>
+      </div>
+
+      <!-- Register Form -->
+      <div id="registerForm" class="space-y-4 hidden">
+        <h3 class="text-2xl font-bold text-gray-900 mb-3">Create Account</h3>
+        <p class="text-gray-600 mb-6 leading-relaxed">
+          Join Briefly to start optimizing your daily routine.
+        </p>
+        <div class="space-y-4">
+          <input 
+            type="text" 
+            id="registerName"
+            placeholder="Your Name"
+            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-300 text-gray-700 placeholder-gray-400"
+          >
+          <input 
+            type="email" 
+            id="registerEmail"
+            placeholder="your@email.com"
+            class="w-full px-4 py-3 border-2 border-gray-200 rounded-xl focus:ring-4 focus:ring-primary-500/20 focus:border-primary-500 transition-all duration-300 text-gray-700 placeholder-gray-400"
+          >
+          <button onclick="handleRegister()" class="w-full px-6 py-3 bg-gradient-to-r from-green-600 to-emerald-600 text-white rounded-xl font-semibold hover:from-green-700 hover:to-emerald-700 transition-all duration-200 shadow-lg hover:shadow-xl hover:scale-105 active:scale-95">
+            Create Account
+          </button>
+        </div>
+      </div>
+
+      <p class="text-xs text-gray-500 mt-4">
+        By continuing, you agree to our Terms of Service
+      </p>
+      
+      <!-- Demo Info -->
+      <div class="mt-6 p-4 bg-blue-50 rounded-xl border border-blue-200">
+        <p class="text-sm text-blue-700">
+          <strong>Demo Tip:</strong> You can use any email address to login or register. The system will auto-create your account.
+        </p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- News Preferences Modal -->
+<div id="newsPreferencesModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 hidden fade-in-up">
+    <div class="bg-white rounded-2xl p-8 mx-4 max-w-md w-full glass-effect border border-white/20 shadow-2xl">
+        <div class="text-center">
+            <div class="w-16 h-16 bg-gradient-to-br from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                <i class="fas fa-newspaper text-white text-xl"></i>
+            </div>
+            <h3 class="text-2xl font-bold text-gray-900 mb-3">News Preferences</h3>
+            <p class="text-gray-600 mb-6 leading-relaxed">
+                Customize your daily news briefing
+            </p>
+            
+            <div class="space-y-4 text-left">
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">News Categories</label>
+                    <div class="space-y-2">
+                        <label class="flex items-center">
+                            <input type="checkbox" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" checked>
+                            <span class="ml-2 text-gray-700">Technology & AI</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" checked>
+                            <span class="ml-2 text-gray-700">Productivity</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" checked>
+                            <span class="ml-2 text-gray-700">Health & Wellness</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500">
+                            <span class="ml-2 text-gray-700">Business</span>
+                        </label>
+                        <label class="flex items-center">
+                            <input type="checkbox" class="rounded border-gray-300 text-primary-600 focus:ring-primary-500" checked>
+                            <span class="ml-2 text-gray-700">Local News</span>
+                        </label>
+                    </div>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Briefing Style</label>
+                    <select class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                        <option value="concise">Concise (3-4 stories)</option>
+                        <option value="detailed">Detailed (5-7 stories)</option>
+                        <option value="motivational">Motivational Focus</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block text-sm font-medium text-gray-700 mb-2">Interests (optional)</label>
+                    <input type="text" placeholder="AI, productivity, health, etc." class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500">
+                </div>
+            </div>
+            
+            <div class="flex space-x-4 mt-6">
+                <button onclick="hideNewsPreferences()" class="flex-1 px-6 py-3 border-2 border-gray-300 text-gray-700 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-200">
+                    Cancel
+                </button>
+                <button onclick="saveNewsPreferences()" class="flex-1 px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-xl font-semibold hover:from-blue-700 hover:to-purple-700 transition-all duration-200 shadow-lg">
+                    Save Preferences
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
     <script>
         // Global state
         let userLocation = null;
@@ -593,18 +742,25 @@
             console.log('🚀 Briefly initialized');
             initializeApp();
         });
+        // Add tab event listeners
+        document.getElementById('loginTab').addEventListener('click', showLoginForm);
+        document.getElementById('registerTab').addEventListener('click', showRegisterForm);
 
         async function initializeApp() {
+            console.log('🚀 Initializing Briefly...');
+            document.body.classList.add('fade-in-up');
+            await checkCalendarStatus();
             await loadUserPreferences();
             initializeSuccessTracking();
             showNotification('Welcome to Briefly! 🚀', 'success');
+            scrollToBottom();
             
             // Auto-show location modal on first visit
-            if (!getLocationFromCookie()) {
-                setTimeout(() => {
-                    showLocationModal();
-                }, 1000);
-            }
+            //if (!getLocationFromCookie()) {
+            //    setTimeout(() => {
+            //        showLocationModal();
+            //    }, 1000);
+            //}
         }
 
         // Enhanced Location Management - FIXED
@@ -1259,6 +1415,305 @@ Complete at least one action that moves you toward your goals today!`;
 
         // Initialize with digest section by default
         showSection('digest');
+
+        // Auth functions
+function showAuthModal() {
+  document.getElementById('authModal').classList.remove('hidden');
+  showLoginForm();
+}
+
+function hideAuthModal() {
+  document.getElementById('authModal').classList.add('hidden');
+}
+
+function showLoginForm() {
+  document.getElementById('loginForm').classList.remove('hidden');
+  document.getElementById('registerForm').classList.add('hidden');
+  document.getElementById('loginTab').classList.add('text-primary-600', 'border-primary-600');
+  document.getElementById('loginTab').classList.remove('text-gray-500', 'border-transparent');
+  document.getElementById('registerTab').classList.add('text-gray-500', 'border-transparent');
+  document.getElementById('registerTab').classList.remove('text-primary-600', 'border-primary-600');
+}
+
+function showRegisterForm() {
+  document.getElementById('registerForm').classList.remove('hidden');
+  document.getElementById('loginForm').classList.add('hidden');
+  document.getElementById('registerTab').classList.add('text-primary-600', 'border-primary-600');
+  document.getElementById('registerTab').classList.remove('text-gray-500', 'border-transparent');
+  document.getElementById('loginTab').classList.add('text-gray-500', 'border-transparent');
+  document.getElementById('loginTab').classList.remove('text-primary-600', 'border-primary-600');
+}
+
+async function handleLogin() {
+  const email = document.getElementById('loginEmail').value;
+  if (!email) {
+    showNotification('Please enter your email', 'error');
+    return;
+  }
+
+  try {
+    const response = await fetch('/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email })
+    });
+
+    const data = await response.json();
+    
+    if (data.success) {
+      hideAuthModal();
+      showNotification(`Welcome back, ${data.user.name}!`, 'success');
+      
+      // Load user preferences
+      if (data.preferences) {
+        loadUserPreferences(data.preferences);
+      }
+      
+      // Update UI to show logged in state
+      updateAuthUI(data.user);
+    } else {
+      showNotification(data.error, 'error');
+    }
+  } catch (error) {
+    console.error('Login error:', error);
+    showNotification('Login failed. Please try again.', 'error');
+  }
+}
+
+async function handleRegister() {
+  const name = document.getElementById('registerName').value;
+  const email = document.getElementById('registerEmail').value;
+  
+  if (!email) {
+    showNotification('Please enter your email', 'error');
+    return;
+  }
+
+  try {
+    const response = await fetch('/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ 
+        email, 
+        name: name || email.split('@')[0] 
+      })
+    });
+
+    const data = await response.json();
+    
+    if (data.success) {
+      hideAuthModal();
+      showNotification(`Welcome to Briefly, ${data.user.name}!`, 'success');
+      
+      // Update UI to show logged in state
+      updateAuthUI(data.user);
+    } else {
+      showNotification(data.error, 'error');
+    }
+  } catch (error) {
+    console.error('Registration error:', error);
+    showNotification('Registration failed. Please try again.', 'error');
+  }
+}
+
+async function handleLogout() {
+  try {
+    const response = await fetch('/auth/logout', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' }
+    });
+
+    const data = await response.json();
+    
+    if (data.success) {
+      showNotification('Logged out successfully', 'info');
+      
+      // Reset UI to logged out state
+      updateAuthUI(null);
+      
+      // Clear local data
+      userLocation = null;
+      currentGoals = [];
+      dailyProgress = [];
+      updateSuccessUI();
+    }
+  } catch (error) {
+    console.error('Logout error:', error);
+    showNotification('Logout failed. Please try again.', 'error');
+  }
+}
+
+function updateAuthUI(user) {
+  const authSection = document.getElementById('authSection');
+  
+  if (!authSection) {
+    // Create auth section in header if it doesn't exist
+    const header = document.querySelector('header .container .flex:last-child');
+    if (header) {
+      const authHtml = `
+        <div id="authSection" class="flex items-center space-x-4">
+          ${user ? `
+            <div class="flex items-center space-x-3 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/20">
+              <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
+                <span class="text-white text-sm font-semibold">${user.name.charAt(0).toUpperCase()}</span>
+              </div>
+              <span class="text-white text-sm">${user.name}</span>
+              <button onclick="handleLogout()" class="text-white/70 hover:text-white transition-colors">
+                <i class="fas fa-sign-out-alt"></i>
+              </button>
+            </div>
+          ` : `
+            <button onclick="showAuthModal()" class="px-6 py-3 bg-white text-primary-600 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg flex items-center space-x-3">
+              <i class="fas fa-user"></i>
+              <span>Sign In</span>
+            </button>
+          `}
+        </div>
+      `;
+      header.insertAdjacentHTML('beforeend', authHtml);
+    }
+  } else {
+    // Update existing auth section
+    authSection.innerHTML = user ? `
+      <div class="flex items-center space-x-3 bg-white/10 backdrop-blur-sm rounded-xl px-4 py-2 border border-white/20">
+        <div class="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-600 rounded-full flex items-center justify-center">
+          <span class="text-white text-sm font-semibold">${user.name.charAt(0).toUpperCase()}</span>
+        </div>
+        <span class="text-white text-sm">${user.name}</span>
+        <button onclick="handleLogout()" class="text-white/70 hover:text-white transition-colors">
+          <i class="fas fa-sign-out-alt"></i>
+        </button>
+      </div>
+    ` : `
+      <button onclick="showAuthModal()" class="px-6 py-3 bg-white text-primary-600 rounded-xl font-semibold hover:bg-gray-50 transition-all duration-300 hover:scale-105 active:scale-95 shadow-lg flex items-center space-x-3">
+        <i class="fas fa-user"></i>
+        <span>Sign In</span>
+      </button>
+    `;
+  }
+}
+
+function loadUserPreferences(preferences) {
+  if (preferences && preferences.location) {
+    try {
+      const location = JSON.parse(preferences.location);
+      if (location && location.city) {
+        updateLocationStatus(location.city, 'Connected');
+        updateWeatherDisplay(location.city);
+      }
+    } catch (e) {
+      console.log('Error parsing location preferences');
+    }
+  }
+  
+  if (preferences && preferences.goals) {
+    try {
+      currentGoals = JSON.parse(preferences.goals) || [];
+    } catch (e) {
+      console.log('Error parsing goals preferences');
+      currentGoals = [];
+    }
+  }
+  
+  if (preferences && preferences.progress) {
+    try {
+      dailyProgress = JSON.parse(preferences.progress) || [];
+    } catch (e) {
+      console.log('Error parsing progress preferences');
+      dailyProgress = [];
+    }
+  }
+  
+  updateSuccessUI();
+}
+
+// Initialize auth UI on page load
+document.addEventListener('DOMContentLoaded', function() {
+  // Check if user is already logged in by making a request to /digest
+  // which will return user info if session exists
+  fetch('/digest')
+    .then(response => response.json())
+    .then(data => {
+      if (data.user) {
+        updateAuthUI(data.user);
+      } else {
+        updateAuthUI(null);
+        // Auto-show auth modal after a delay if not logged in
+        setTimeout(() => {
+          showAuthModal();
+        }, 1000);
+      }
+    })
+    .catch(() => {
+      updateAuthUI(null);
+    });
+});
+
+// News preferences functions
+function showNewsPreferences() {
+    document.getElementById('newsPreferencesModal').classList.remove('hidden');
+}
+
+function hideNewsPreferences() {
+    document.getElementById('newsPreferencesModal').classList.add('hidden');
+}
+
+function saveNewsPreferences() {
+    const categories = [];
+    const checkboxes = document.querySelectorAll('#newsPreferencesModal input[type="checkbox"]:checked');
+    checkboxes.forEach(checkbox => {
+        categories.push(checkbox.nextElementSibling.textContent.trim());
+    });
+    
+    const style = document.querySelector('#newsPreferencesModal select').value;
+    const interests = document.querySelector('#newsPreferencesModal input[type="text"]').value.split(',').map(i => i.trim()).filter(i => i);
+    
+    // Save to user preferences
+    const newsPreferences = {
+        categories,
+        style,
+        interests
+    };
+    
+    localStorage.setItem('briefly_news_preferences', JSON.stringify(newsPreferences));
+    hideNewsPreferences();
+    showNotification('News preferences saved!', 'success');
+}
+
+function loadNewsPreferences() {
+    const saved = localStorage.getItem('briefly_news_preferences');
+    if (saved) {
+        return JSON.parse(saved);
+    }
+    return {
+        categories: ['Technology & AI', 'Productivity', 'Health & Wellness', 'Local News'],
+        style: 'concise',
+        interests: []
+    };
+}
+
+// Update the AI assistant to use news preferences
+async function getNewsBriefing() {
+    const preferences = loadNewsPreferences();
+    const user = c.get('user'); // Get from context
+    
+    try {
+        const response = await fetch('/ask', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ 
+                question: `Give me today's news briefing with preferences: ${JSON.stringify(preferences)}`,
+                userPreferences: user ? await getUserPreferences(user.id) : null
+            })
+        });
+        
+        const data = await response.json();
+        return data.response;
+    } catch (error) {
+        console.error('Error getting news briefing:', error);
+        return "Here are today's top updates: Technology continues to advance rapidly, with new AI tools helping people be more productive. Remember to take breaks and stay hydrated!";
+    }
+}
     </script>
 </body>
 </html>
