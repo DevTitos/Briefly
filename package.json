@@ -10,9 +10,9 @@
 		"start": "node dist/index.js",
 		"clean": "rimraf dist",
 		"prebuild": "pnpm clean",
-    	"db:setup": "tsx src/scripts/setup-db.ts",
-    	"db:generate": "drizzle-kit generate:sqlite",
-    	"db:push": "drizzle-kit push"
+		"db:setup": "tsx src/scripts/setup-db.ts",
+		"db:generate": "drizzle-kit generate:sqlite",
+		"db:push": "drizzle-kit push"
 	},
 	"repository": {
 		"type": "git",
@@ -35,7 +35,6 @@
 	"homepage": "https://github.com/IQAICOM/adk-hono-server#readme",
 	"dependencies": {
 		"@hono/node-server": "^1.19.2",
-		"@iqai/adk": "^0.3.2",
 		"@libsql/client": "^0.15.15",
 		"bcryptjs": "^3.0.2",
 		"dotenv": "^17.2.2",
@@ -53,5 +52,4 @@
 		"tsx": "^4.20.5",
 		"typescript": "^5.9.2"
 	}
-
 }
